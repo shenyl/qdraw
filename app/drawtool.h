@@ -31,6 +31,7 @@ enum DrawShape
     bezier,
     polygon,
     polyline,
+    supergroup ,
 };
 
 class DrawTool

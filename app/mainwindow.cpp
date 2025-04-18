@@ -230,6 +230,9 @@ void MainWindow::createActions()
     rotateAct = new QAction(QIcon(":/icons/rotate.png"),tr("rotate tool"),this);
     rotateAct->setCheckable(true);
 
+    supergroupAct = new QAction(QIcon(":/icons/supergroup.png"),tr("supergroup tool"),this);
+    supergroupAct->setCheckable(true);
+
     drawActionGroup = new QActionGroup(this);
     drawActionGroup->addAction(selectAct);
     drawActionGroup->addAction(lineAct);
@@ -239,6 +242,7 @@ void MainWindow::createActions()
     drawActionGroup->addAction(polygonAct);
     drawActionGroup->addAction(polylineAct);
     drawActionGroup->addAction(bezierAct);
+    drawActionGroup->addAction(supergroupAct);
     drawActionGroup->addAction(rotateAct);
     selectAct->setChecked(true);
 
@@ -251,6 +255,7 @@ void MainWindow::createActions()
     connect(polygonAct,SIGNAL(triggered()),this,SLOT(addShape()));
     connect(polylineAct,SIGNAL(triggered()),this,SLOT(addShape()));
     connect(bezierAct,SIGNAL(triggered()),this,SLOT(addShape()));
+    connect(supergroupAct,SIGNAL(triggered()),this,SLOT(addShape()));
     connect(rotateAct,SIGNAL(triggered()),this,SLOT(addShape()));
 
     deleteAct = new QAction(tr("&Delete"), this);
@@ -286,6 +291,9 @@ void MainWindow::createActions()
 
     funcAct = new QAction(tr("func test"),this);
     connect(funcAct,SIGNAL(triggered()),this,SLOT(on_func_test_triggered()));
+
+    func1Act = new QAction(tr("func test1"),this);
+    connect(func1Act,SIGNAL(triggered()),this,SLOT(on_func_test1_triggered()));
 
 }
 
@@ -346,6 +354,9 @@ void MainWindow::createMenus()
     helpMenu->addAction(aboutQtAct);
     helpMenu->addAction(funcAct);
 
+    QMenu *testMenu = menuBar()->addMenu(tr("功能测试"));
+    testMenu->addAction( func1Act );
+
 }
 
 void MainWindow::createToolbars()
@@ -374,6 +385,7 @@ void MainWindow::createToolbars()
     drawToolBar->addAction(polygonAct);
     drawToolBar->addAction(polylineAct);
     drawToolBar->addAction(bezierAct);
+    drawToolBar->addAction(supergroupAct);
     drawToolBar->addAction(rotateAct);
 
     // create align toolbar
@@ -551,7 +563,7 @@ DrawView *MainWindow::createMdiChild()
     view->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
     // move orign point to leftbottom
-    view->setTransform(view->transform().scale(1,-1));
+//    view->setTransform(view->transform().scale(1,-1));
 
 
     scene->setBackgroundBrush(Qt::darkGray);
@@ -578,6 +590,8 @@ void MainWindow::addShape()
         DrawTool::c_drawShape = polygon;
     else if ( sender() == bezierAct )
         DrawTool::c_drawShape = bezier ;
+    else if ( sender() == supergroupAct )
+        DrawTool::c_drawShape = supergroup ;
     else if (sender() == rotateAct )
         DrawTool::c_drawShape = rotation;
     else if (sender() == polylineAct )
@@ -870,6 +884,33 @@ void MainWindow::on_func_test_triggered()
         editor->show();
 */
 //    dockProperty->showNormal();
+}
+
+//
+void MainWindow::on_func_test1_triggered()
+{
+    if (!activeMdiChild()) return ;
+    QGraphicsScene * scene = activeMdiChild()->scene();
+
+    QList<QGraphicsItem *> allItems = scene->items();
+    GraphicsSuperGroupItem *superGroupItem = nullptr;
+    QList<GraphicsItemGroup *> groupItems;
+
+    // 找出 GraphicsSuperGroupItem 和 GraphicsItemGroup 对象
+    for (QGraphicsItem *item : allItems ) {
+        if (GraphicsSuperGroupItem *superGroup = dynamic_cast<GraphicsSuperGroupItem *>(item)) {
+            superGroupItem = superGroup;
+        } else if (GraphicsItemGroup *group = dynamic_cast<GraphicsItemGroup *>(item)) {
+            groupItems.append(group);
+        }
+    }
+
+    if (superGroupItem) {
+        for (GraphicsItemGroup *group : groupItems) {
+            group->setSelected(false);
+            superGroupItem->addGroup(group);
+        }
+    }
 }
 
 void MainWindow::on_copy()

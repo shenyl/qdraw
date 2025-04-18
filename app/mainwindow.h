@@ -9,6 +9,7 @@
 #include "drawscene.h"
 #include "objectcontroller.h"
 #include "drawview.h"
+#include "drawsupergroup.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -74,6 +75,7 @@ public slots:
     void on_group_triggered();
     void on_unGroup_triggered();
     void on_func_test_triggered();
+    void on_func_test1_triggered();
     void on_copy();
     void on_paste();
     void on_cut();
@@ -123,6 +125,7 @@ private:
     QAction  * sendToBackAct;
 
     QAction  * funcAct;
+    QAction  * func1Act;
     // file
     QAction *newAct;
     QAction *openAct;
@@ -154,6 +157,7 @@ private:
     QAction  * polylineAct;
     QAction  * bezierAct;
     QAction  * rotateAct;
+    QAction  * supergroupAct;
 
     QAction *closeAct;
     QAction *closeAllAct;

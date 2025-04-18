@@ -16,6 +16,7 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     drawobj.cpp \
+    drawsupergroup.cpp  \
     drawscene.cpp \
     drawtool.cpp \
     sizehandle.cpp \
@@ -28,6 +29,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     drawobj.h \
+    drawsupergroup.h \
     drawscene.h \
     drawtool.h \
     sizehandle.h \

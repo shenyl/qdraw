@@ -6,6 +6,7 @@
 #include <QGraphicsLineItem>
 #include <QtMath>
 #include "drawobj.h"
+#include "drawsupergroup.h"
 #define PI 3.1416
 
 QList<DrawTool*> DrawTool::c_tools;
@@ -19,6 +20,7 @@ static SelectTool selectTool;
 static RectTool   rectTool(rectangle);
 static RectTool   roundRectTool(roundrect);
 static RectTool   ellipseTool(ellipse);
+static RectTool   supergroupTool(supergroup);
 
 static PolygonTool lineTool(line);
 static PolygonTool polygonTool(polygon);
@@ -447,7 +449,11 @@ void RectTool::mousePressEvent(QGraphicsSceneMouseEvent *event, DrawScene *scene
     case ellipse:
         item = new GraphicsEllipseItem(QRect(1,1,1,1));
         break;
+    case supergroup:
+        item = new GraphicsSuperGroupItem( QRect(1,1,1,1),  0 );
+        break;
     }
+
     if ( item == 0) return;
     c_down+=QPoint(2,2);
     item->setPos(event->scenePos());
