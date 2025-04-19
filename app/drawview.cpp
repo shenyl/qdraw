@@ -18,6 +18,8 @@ DrawView::DrawView(QGraphicsScene *scene)
     isUntitled = true;
 
     modified = false;
+
+    setAlignment( Qt::AlignLeft | Qt::AlignTop );
 }
 
 void DrawView::zoomIn()

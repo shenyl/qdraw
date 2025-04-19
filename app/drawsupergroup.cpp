@@ -61,42 +61,38 @@ void GraphicsSuperGroupItem::stretch(int handle , double sx, double sy, const QP
 {
 //    qDebug( ) << "stretch origin :"  << origin <<  handle <<  sx  <<  sy ;
     switch (handle) {
-    case Right:
-    case Left:
-        sy = 1;
-        break;
-    case Top:
-    case Bottom:
-        sx = 1;
-        break;
-    default:
-        break;
-    }
+        case Right:
+        case Left:
+            sy = 1;
+            break;
+        case Top:
+        case Bottom:
+            sx = 1;
+            break;
+        default:
+            break;
+        }
 
-    foreach (QGraphicsItem *item , pItemGroup->childItems()) {
-         AbstractShape * ab = qgraphicsitem_cast<AbstractShape*>(item);
-         if (ab && !qgraphicsitem_cast<SizeHandleRect*>(ab)){
-             ab->stretch(handle,sx,sy,ab->mapFromParent(origin));
-         }
-//        GraphicsItemGroup * ab = qgraphicsitem_cast< GraphicsItemGroup *>(item);
-//        if ( ab ){
-//            ab->stretch(handle,sx,sy,ab->mapFromParent(origin));
-//        }
+    //
+        foreach (QGraphicsItem *item , pItemGroup->childItems()) {
+             AbstractShape * ab = qgraphicsitem_cast<AbstractShape*>(item);
+             if (ab && !qgraphicsitem_cast<SizeHandleRect*>(ab)){
+                 ab->stretch(handle,sx,sy,ab->mapFromParent(origin));
+             }
+        }
 
-    }
+        opposite_ = origin;
 
-    opposite_ = origin;
+        QTransform trans  ;
+        trans.translate(origin.x(),origin.y());
+        trans.scale(sx,sy);
+        trans.translate(-origin.x(),-origin.y());
 
-    QTransform trans  ;
-    trans.translate(origin.x(),origin.y());
-    trans.scale(sx,sy);
-    trans.translate(-origin.x(),-origin.y());
-
-    prepareGeometryChange();
-    m_localRect = trans.mapRect(m_initialRect);
-    m_width = m_localRect.width();
-    m_height = m_localRect.height();
-    updatehandles();
+        prepareGeometryChange();
+        m_localRect = trans.mapRect(m_initialRect);
+        m_width = m_localRect.width();
+        m_height = m_localRect.height();
+        updatehandles();
 
 //    qDebug(  ) << "svg size: " <<  svgRect <<  "ratiosvg: " <<  ratiosvg ;
 //    qDebug(  ) << "rect: " <<  m_localRect  ;
@@ -107,38 +103,44 @@ void GraphicsSuperGroupItem::updateCoordinate()
 {
 //    qDebug( ) << "updatecoordinate: " << m_localRect ;
 
-
     QPointF pt1,pt2,delta;
+//    if (m_localRect.isNull() )
+//        m_localRect = rect();
 
     pt1 = mapToScene(transformOriginPoint());
     pt2 = mapToScene(m_localRect.center());
     delta = pt1 - pt2;
-
-    if (!parentItem() ){
-        prepareGeometryChange();
-        m_localRect = QRectF(-m_width/2,-m_height/2,m_width,m_height);
-        qDebug( ) << "updatecoordinate  1: " << m_localRect ;
-
-        m_width = m_localRect.width();
-        m_height = m_localRect.height();
-        setTransform(transform().translate(delta.x(),delta.y()));
-        setTransformOriginPoint(m_localRect.center());
-        moveBy(-delta.x(),-delta.y());
-        setTransform(transform().translate(-delta.x(),-delta.y()));
-        opposite_ = QPointF(0,0);
-        updatehandles();
-    }
-
-    updatehandles();
     m_initialRect = m_localRect;
+    m_width = m_localRect.width();
+    m_height = m_localRect.height();
+    setTransform(transform().translate(delta.x(),delta.y()));
+    setTransformOriginPoint(m_localRect.center());
+    moveBy(-delta.x(),-delta.y());
 
-    foreach (QGraphicsItem *item , childItems()) {
+    foreach (QGraphicsItem *item , pItemGroup->childItems()) {
          AbstractShape * ab = qgraphicsitem_cast<AbstractShape*>(item);
-         if (ab && !qgraphicsitem_cast<SizeHandleRect*>(ab))
+         if (ab && !qgraphicsitem_cast<SizeHandleRect*>(ab)){
              ab->updateCoordinate();
+             qDebug(  )<< "updateCoordinate: " <<  ab->displayName();
+         }
     }
+    updatehandles();
 
 }
+
+/////////////
+/// \brief GraphicsSuperGroupItem::move
+/// \param point
+///     QPointF pt1,pt2,delta;
+//    if (m_localRect.isNull() )
+//        m_localRect = rect();
+
+
+///
+///
+///
+/// ///
+///
 
 void GraphicsSuperGroupItem::move(const QPointF &point)
 {
@@ -195,7 +197,7 @@ void GraphicsSuperGroupItem::addGroup( GraphicsItemGroup * group )
         
         // 应用缩放变换
         QTransform transform;
-        transform.scale(scaleFactor, scaleFactor);
+        transform.scale(scaleX, scaleY);
         group->setTransform(transform, true);
         
         // 获取缩放后的组位置（在父坐标系中）
